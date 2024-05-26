@@ -1,9 +1,5 @@
-'use strict';
-
 async function routes(fastify) {
-    fastify.register(import('./search.js'), {
-        prefix: '/bands',
-    });
+    fastify.register(import('./search.js'));
 }
 
 export default routes;
