@@ -8,6 +8,7 @@ const fastify = Fastify({
 });
 
 fastify.log.info('Start init');
+fastify.register(import('./routes/bands/index.js'));
 
 const start = async () => {
     try {
