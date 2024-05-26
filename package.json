@@ -1,0 +1,50 @@
+{
+    "name": "metal-api",
+    "version": "1.0.0",
+    "description": "Metal API is a REST API written in JS for retrieving data from the website Encyclopedia Metallum (https://www.metal-archives.com/)",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "prepare": "husky"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/giacomocamerano/metal-api.git"
+    },
+    "author": "Giacomo Camerano",
+    "license": "GPL-3.0",
+    "bugs": {
+        "url": "https://github.com/giacomocamerano/metal-api/issues"
+    },
+    "homepage": "https://github.com/giacomocamerano/metal-api#readme",
+    "dependencies": {
+        "fastify": "^4.27.0",
+        "node-html-parser": "^6.1.13"
+    },
+    "type": "module",
+    "devDependencies": {
+        "@eslint/js": "^9.3.0",
+        "eslint": "^9.3.0",
+        "eslint-config-prettier": "^9.1.0",
+        "globals": "^15.3.0",
+        "husky": "^8.0.0",
+        "lint-staged": "^15.2.5",
+        "pino-pretty": "^11.1.0",
+        "prettier": "^3.2.5"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged && npm run lint",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+            "post-merge": "npm i"
+        }
+    },
+    "lint-staged": {
+        "./src/**/*.{js,json,md}": [
+            "prettier --write",
+            "eslint --fix"
+        ]
+    }
+}
