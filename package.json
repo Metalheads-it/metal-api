@@ -4,7 +4,8 @@
     "description": "Metal API is a REST API written in JS for retrieving data from the website Encyclopedia Metallum (https://www.metal-archives.com/)",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "node --test-reporter spec --test tests/",
+        "test:coverage": "c8 node --test tests/",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "prepare": "husky"
@@ -20,12 +21,14 @@
     },
     "homepage": "https://github.com/giacomocamerano/metal-api#readme",
     "dependencies": {
+        "esmock": "^2.6.5",
         "fastify": "^4.27.0",
         "node-html-parser": "^6.1.13"
     },
     "type": "module",
     "devDependencies": {
         "@eslint/js": "^9.3.0",
+        "c8": "^9.1.0",
         "eslint": "^9.3.0",
         "eslint-config-prettier": "^9.1.0",
         "globals": "^15.3.0",
@@ -42,7 +45,7 @@
         }
     },
     "lint-staged": {
-        "./src/**/*.{js,json,md}": [
+        "./src/**/*.{js,json,md}, ./tests/**/*.{js,json,md}": [
             "prettier --write",
             "eslint --fix"
         ]
