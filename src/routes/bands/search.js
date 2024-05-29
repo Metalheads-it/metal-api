@@ -1,4 +1,4 @@
-import prepareBandResults from './services/prepareBandResults.js';
+import { prepareBandResults } from './services/prepareBandResults.js';
 import archivesSearchBand from './services/archivesSearch.js';
 
 const searchBand = async (request, reply) => {
