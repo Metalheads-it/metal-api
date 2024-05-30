@@ -1,7 +1,7 @@
 import { prepareBandResults } from './services/prepareBandResults.js';
 import { archivesSearchBand } from './services/archivesSearch.js';
 
-const searchBand = async (request, reply) => {
+const searchBand = async (request: any, reply: any) => {
     try {
         const band = request.params?.band.trim() ?? '';
         const offset = request.params?.offset ?? 0;
@@ -50,7 +50,7 @@ const options = {
     handler: searchBand,
 };
 
-const search = async (fastify) => {
+const search = async (fastify: any) => {
     fastify.get('/search/:band', options);
     fastify.get('/search/:band/:offset', options);
 };

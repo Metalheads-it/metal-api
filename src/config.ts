@@ -1,4 +1,4 @@
-const config = {
+const config: any = {
     logging: {
         development: {
             transport: {
@@ -12,6 +12,9 @@ const config = {
         production: true,
         test: false,
     },
+    port: Number(process.env.PORT) || 3000,
 };
+
+const environment: string = process.env.ENVIRONMENT ?? 'development';
 
 export { config };

@@ -1,12 +1,12 @@
 import { parse } from 'node-html-parser';
 
-const getBandIdFromLink = (link) => {
+const getBandIdFromLink = (link: string | null): string | null => {
     return link?.split('/').at(-1) ?? null;
 };
-const getBandNameFromHTML = (html) => {
+const getBandNameFromHTML = (html: any): string | null => {
     return html?.rawText ?? null;
 };
-const getBandLinkFromHTML = (html) => {
+const getBandLinkFromHTML = (html: any): string | null => {
     try {
         return html?.getAttribute('href') ?? null;
     } catch (error) {
@@ -15,14 +15,14 @@ const getBandLinkFromHTML = (html) => {
     }
 };
 
-const prepareBandResults = (data) => {
-    return data.reduce((result, bandData) => {
+const prepareBandResults = (data: string[][] = []): object[] => {
+    return data.reduce((result: object[], bandData: string[]) => {
         try {
             if (!bandData || !bandData[0]) throw new Error('Band data invalid');
-            const linkData = parse(bandData[0]);
-            const band = getBandNameFromHTML(linkData.firstChild);
-            const link = getBandLinkFromHTML(linkData.firstChild);
-            const id = getBandIdFromLink(link);
+            const linkData: any = parse(bandData[0]);
+            const band: string | null = getBandNameFromHTML(linkData.firstChild);
+            const link: string | null = getBandLinkFromHTML(linkData.firstChild);
+            const id: string | null = getBandIdFromLink(link);
             result.push({
                 band,
                 link,

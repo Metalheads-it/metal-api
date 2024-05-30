@@ -1,4 +1,4 @@
-async function routes(fastify) {
+async function routes(fastify: any) {
     fastify.register(import('./bands/index.js'), {
         prefix: '/bands',
     });

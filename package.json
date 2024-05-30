@@ -2,10 +2,11 @@
     "name": "metal-api",
     "version": "1.0.0",
     "description": "Metal API is a REST API written in JS for retrieving data from the website Encyclopedia Metallum (https://www.metal-archives.com/)",
-    "main": "index.js",
+    "main": "src/server.js",
     "scripts": {
-        "test": "node --test-reporter spec --test tests/",
-        "test:coverage": "c8 node --test tests/",
+        "build": "tsc -p tsconfig.json",
+        "test": "npx tsx --test-reporter spec --test $(find ./tests -name '*.ts')",
+        "test:coverage": "c8 npx tsx --test tests/",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "prepare": "husky"
@@ -21,9 +22,10 @@
     },
     "homepage": "https://github.com/giacomocamerano/metal-api#readme",
     "dependencies": {
-        "esmock": "^2.6.5",
+        "@types/node": "^20.12.12",
         "fastify": "^4.27.0",
-        "node-html-parser": "^6.1.13"
+        "node-html-parser": "^6.1.13",
+        "typescript": "^5.4.5"
     },
     "type": "module",
     "devDependencies": {
@@ -31,6 +33,7 @@
         "c8": "^9.1.0",
         "eslint": "^9.3.0",
         "eslint-config-prettier": "^9.1.0",
+        "esmock": "^2.6.5",
         "globals": "^15.3.0",
         "husky": "^8.0.0",
         "lint-staged": "^15.2.5",

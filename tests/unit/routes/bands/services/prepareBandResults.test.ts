@@ -3,7 +3,7 @@ import {
     getBandNameFromHTML,
     getBandLinkFromHTML,
     prepareBandResults,
-} from '../../../../../src/routes/bands/services/prepareBandResults.js';
+} from '../../../../../src/routes/bands/services/prepareBandResults.ts';
 import assert from 'node:assert';
 import { parse } from 'node-html-parser';
 import { describe, it } from 'node:test';
@@ -18,6 +18,7 @@ describe('testing band id generation', () => {
         });
     });
     it('check band id generation from invalid input', async () => {
+        // @ts-expect-error testing wrong argument type
         assert.strictEqual(getBandIdFromLink(undefined), null);
     });
 });
@@ -78,6 +79,7 @@ describe('testing prepareBandResults', () => {
                 'Death Metal',
                 'Denmark',
             ],
+            // @ts-expect-error testing wrong argument type
             [undefined, undefined, undefined],
             [
                 '<a href="https://www.metal-archives.com/bands/Immortal/44201">Immortal</a>  <!-- 8.533402 -->',
