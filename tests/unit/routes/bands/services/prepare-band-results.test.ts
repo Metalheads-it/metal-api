@@ -3,9 +3,9 @@ import {
     getBandNameFromHTML,
     getBandLinkFromHTML,
     prepareBandResults,
-} from '../../../../../src/routes/bands/services/prepareBandResults.ts';
+} from '../../../../../src/routes/bands/services/prepare-band-results.ts';
 import assert from 'node:assert';
-import { parse } from 'node-html-parser';
+import { parse, HTMLElement } from 'node-html-parser';
 import { describe, it } from 'node:test';
 import mockDataEmptyArchives from '../../../../mock_data/ajax-band-search-empty.json' assert { type: 'json' };
 import mockDataArchives from '../../../../mock_data/ajax-band-search-immortal.json' assert { type: 'json' };
@@ -18,8 +18,8 @@ describe('testing band id generation', () => {
         });
     });
     it('check band id generation from invalid input', async () => {
-        // @ts-expect-error testing wrong argument type
-        assert.strictEqual(getBandIdFromLink(undefined), null);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        assert.strictEqual(getBandIdFromLink(undefined), undefined);
     });
 });
 describe('testing band id generation', () => {
@@ -30,24 +30,24 @@ describe('testing band id generation', () => {
         });
     });
     it('check band name generation from invalid input', async () => {
-        assert.strictEqual(getBandNameFromHTML(undefined), null);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        assert.strictEqual(getBandNameFromHTML(undefined), undefined);
     });
 });
 describe('testing band link generation', () => {
     it('check band link generation', async () => {
         mockDataGenerated.map((element) => {
             const linkData = parse(element.originalLink);
-            assert.strictEqual(getBandLinkFromHTML(linkData.firstChild), element.link);
+            assert.strictEqual(getBandLinkFromHTML(linkData), element.link);
         });
     });
     it('check band link generation from invalid input', async () => {
-        assert.strictEqual(getBandLinkFromHTML(undefined), null);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        assert.strictEqual(getBandLinkFromHTML(undefined), undefined);
     });
     it('check band link generation from invalid input', async () => {
-        assert.strictEqual(getBandLinkFromHTML(null), null);
-    });
-    it('check band link generation from invalid input', async () => {
-        assert.strictEqual(getBandLinkFromHTML('hello'), null);
+        // @ts-expect-error testing wrong argument type
+        assert.strictEqual(getBandLinkFromHTML('hello'), undefined);
     });
 });
 
@@ -59,7 +59,7 @@ describe('testing prepareBandResults', () => {
     });
     it('check with generated band data, check results', async () => {
         mockDataGenerated.map((bandData) => {
-            const bands = prepareBandResults([bandData.aaData] ?? []);
+            const bands = prepareBandResults([bandData?.aaData]);
             const band = bands[0] ?? {};
             assert.strictEqual(band.band, bandData.band);
             assert.strictEqual(band.link, bandData.link);

@@ -1,4 +1,4 @@
-import { prepareBandName, prepareOffset } from '../../../../../src/routes/bands/services/archivesSearch.ts';
+import { prepareBandName, prepareOffset } from '../../../../../src/routes/bands/services/archives-search.ts';
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 import mockData from '../../../../mock_data/ajax-band-search-immortal.json' assert { type: 'json' };
@@ -12,7 +12,7 @@ describe('testing parameters generation', () => {
         });
     });
     it('check band names slug generation, undefined', async () => {
-        assert.strictEqual(prepareBandName(undefined), '');
+        assert.strictEqual(prepareBandName(), '');
     });
     it('check offset generation, normal', () => {
         assert.strictEqual(prepareOffset(10), 10);
@@ -25,7 +25,7 @@ describe('testing parameters generation', () => {
         assert.strictEqual(prepareOffset(null), 0);
     });
     it('check offset generation, undefined', () => {
-        assert.strictEqual(prepareOffset(undefined), 0);
+        assert.strictEqual(prepareOffset(), 0);
     });
     it('check offset generation, negative', () => {
         assert.strictEqual(prepareOffset(-1), 0);
@@ -37,7 +37,7 @@ describe('testing parameters generation', () => {
 });
 describe("testing 'bands/search' route", async () => {
     it('normal band, no offset', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archivesSearch.ts', {
+        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
             '../../../../../src/lib/fetch.ts': {
                 getJSON: () => mockData,
             },
@@ -49,7 +49,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 105);
     });
     it('normal band, with offset', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archivesSearch.ts', {
+        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
             '../../../../../src/lib/fetch.ts': {
                 getJSON: () => mockData,
             },
@@ -61,7 +61,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 105);
     });
     it('empty band', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archivesSearch.ts', {
+        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
             '../../../../../src/lib/fetch.ts': {
                 getJSON: () => mockData,
             },
@@ -73,7 +73,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 0);
     });
     it('empty band, force all', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archivesSearch.ts', {
+        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
             '../../../../../src/lib/fetch.ts': {
                 getJSON: () => mockData,
             },
@@ -85,7 +85,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 105);
     });
     it('normal band, invalid offset', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archivesSearch.ts', {
+        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
             '../../../../../src/lib/fetch.ts': {
                 getJSON: () => mockData,
             },

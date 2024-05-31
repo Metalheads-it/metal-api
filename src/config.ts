@@ -1,20 +1,35 @@
-const config: any = {
-    logging: {
-        development: {
-            transport: {
-                target: 'pino-pretty',
-                options: {
-                    translateTime: 'HH:MM:ss Z',
-                    ignore: 'pid,hostname',
-                },
-            },
-        },
-        production: true,
-        test: false,
-    },
-    port: Number(process.env.PORT) || 3000,
+interface ILoggingConfig {
+    transport: {
+        target: string;
+        options: {
+            translateTime: string;
+            ignore: string;
+        };
+    };
+}
+
+interface Config {
+    logger: ILoggingConfig | boolean;
+}
+
+const production: Config = {
+    logger: true,
 };
 
-const environment: string = process.env.ENVIRONMENT ?? 'development';
+const development: Config = {
+    logger: {
+        transport: {
+            target: 'pino-pretty',
+            options: {
+                translateTime: 'HH:MM:ss Z',
+                ignore: 'pid,hostname',
+            },
+        },
+    },
+};
 
-export { config };
+const options = process.env.ENVIRONMENT === 'production' ? production : development;
+
+const port = Number(process.env.PORT) || 3000;
+
+export { options, port };

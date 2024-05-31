@@ -1,4 +1,6 @@
-async function routes(fastify: any) {
+import { FastifyInstance } from 'fastify';
+
+async function routes(fastify: FastifyInstance) {
     fastify.register(import('./search.js'));
 }
 
