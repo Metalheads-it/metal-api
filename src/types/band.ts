@@ -5,4 +5,4 @@ type BandSearchResult = {
     genre: string | undefined;
     country: string | undefined;
 };
-export { BandSearchResult };
+export type { BandSearchResult };

@@ -5,6 +5,14 @@ import mockData from '../../../../mock_data/ajax-band-search-immortal.json' asse
 import mockDataGenerated from '../../../../mock_data/complete-200-band-data.json' assert { type: 'json' };
 import esmock from 'esmock';
 
+async function setupArchivesSearch() {
+    return await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
+        '../../../../../src/lib/fetch.ts': {
+            getJSON: () => mockData,
+        },
+    });
+}
+
 describe('testing parameters generation', () => {
     it('check band names slug generation, use mock data', async () => {
         mockDataGenerated.map((element) => {
@@ -21,8 +29,8 @@ describe('testing parameters generation', () => {
         assert.strictEqual(prepareOffset(0), 0);
     });
     it('check offset generation, null', () => {
-        // @ts-expect-error testing wrong argument type
-        assert.strictEqual(prepareOffset(null), 0);
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        assert.strictEqual(prepareOffset(undefined), 0);
     });
     it('check offset generation, undefined', () => {
         assert.strictEqual(prepareOffset(), 0);
@@ -37,11 +45,7 @@ describe('testing parameters generation', () => {
 });
 describe("testing 'bands/search' route", async () => {
     it('normal band, no offset', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
-            '../../../../../src/lib/fetch.ts': {
-                getJSON: () => mockData,
-            },
-        });
+        const archivesSearch = await setupArchivesSearch();
         const data = await archivesSearch.archivesSearchBand('some random band');
         assert.strictEqual(data.error, '');
         assert.strictEqual(data.iTotalRecords, 105);
@@ -49,11 +53,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 105);
     });
     it('normal band, with offset', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
-            '../../../../../src/lib/fetch.ts': {
-                getJSON: () => mockData,
-            },
-        });
+        const archivesSearch = await setupArchivesSearch();
         const data = await archivesSearch.archivesSearchBand('some random band', 10);
         assert.strictEqual(data.error, '');
         assert.strictEqual(data.iTotalRecords, 105);
@@ -61,11 +61,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 105);
     });
     it('empty band', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
-            '../../../../../src/lib/fetch.ts': {
-                getJSON: () => mockData,
-            },
-        });
+        const archivesSearch = await setupArchivesSearch();
         const data = await archivesSearch.archivesSearchBand('');
         assert.strictEqual(data.error, '');
         assert.strictEqual(data.iTotalRecords, 0);
@@ -73,11 +69,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 0);
     });
     it('empty band, force all', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
-            '../../../../../src/lib/fetch.ts': {
-                getJSON: () => mockData,
-            },
-        });
+        const archivesSearch = await setupArchivesSearch();
         const data = await archivesSearch.archivesSearchBand('', 10, true);
         assert.strictEqual(data.error, '');
         assert.strictEqual(data.iTotalRecords, 105);
@@ -85,11 +77,7 @@ describe("testing 'bands/search' route", async () => {
         assert.strictEqual(data.aaData.length, 105);
     });
     it('normal band, invalid offset', async () => {
-        const archivesSearch = await esmock('../../../../../src/routes/bands/services/archives-search.ts', {
-            '../../../../../src/lib/fetch.ts': {
-                getJSON: () => mockData,
-            },
-        });
+        const archivesSearch = await setupArchivesSearch();
         const data = await archivesSearch.archivesSearchBand('some random band', -10);
         assert.strictEqual(data.error, '');
         assert.strictEqual(data.iTotalRecords, 105);

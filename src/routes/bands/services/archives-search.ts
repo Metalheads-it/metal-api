@@ -1,6 +1,6 @@
 import { getJSON } from '../../../lib/fetch.js';
 
-const prepareBandName = (name: string = '') => {
+const prepareBandName = (name: string | undefined = '') => {
     return encodeURIComponent(name?.replace(' ', '+') ?? '');
 };
 

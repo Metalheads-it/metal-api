@@ -5,7 +5,7 @@ import {
     prepareBandResults,
 } from '../../../../../src/routes/bands/services/prepare-band-results.ts';
 import assert from 'node:assert';
-import { parse, HTMLElement } from 'node-html-parser';
+import { parse } from 'node-html-parser';
 import { describe, it } from 'node:test';
 import mockDataEmptyArchives from '../../../../mock_data/ajax-band-search-empty.json' assert { type: 'json' };
 import mockDataArchives from '../../../../mock_data/ajax-band-search-immortal.json' assert { type: 'json' };
@@ -26,7 +26,7 @@ describe('testing band id generation', () => {
     it('check band name generation', async () => {
         mockDataGenerated.map((element) => {
             const linkData = parse(element.originalLink);
-            assert.strictEqual(getBandNameFromHTML(linkData.firstChild), element.band);
+            assert.strictEqual(getBandNameFromHTML(linkData), element.band);
         });
     });
     it('check band name generation from invalid input', async () => {

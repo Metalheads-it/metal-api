@@ -1,6 +1,6 @@
 import { prepareBandResults } from './services/prepare-band-results.js';
 import { archivesSearchBand } from './services/archives-search.js';
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 interface IBandSearch {
     band: string;
