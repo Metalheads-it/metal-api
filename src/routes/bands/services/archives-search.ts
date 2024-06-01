@@ -1,14 +1,14 @@
 import { getJSON } from '../../../lib/fetch.js';
 
-const prepareBandName = (name) => {
+const prepareBandName = (name: string | undefined = '') => {
     return encodeURIComponent(name?.replace(' ', '+') ?? '');
 };
 
-const prepareOffset = (offset = 0) => {
+const prepareOffset = (offset: number = 0) => {
     return Number(offset) < 0 ? 0 : Number(offset) || 0;
 };
 
-const archivesSearchBand = async (band = '', offset = 0, forceAll = false) => {
+const archivesSearchBand = async (band: string = '', offset: number = 0, forceAll: boolean = false) => {
     if (!band && !forceAll) return { error: '', iTotalRecords: 0, iTotalDisplayRecords: 0, aaData: [] };
     try {
         return await getJSON(

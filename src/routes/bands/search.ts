@@ -1,10 +1,19 @@
-import { prepareBandResults } from './services/prepareBandResults.js';
-import { archivesSearchBand } from './services/archivesSearch.js';
+import { prepareBandResults } from './services/prepare-band-results.js';
+import { archivesSearchBand } from './services/archives-search.js';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-const searchBand = async (request, reply) => {
+interface IBandSearch {
+    band: string;
+    offset: number;
+}
+
+const searchBand = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-        const band = request.params?.band.trim() ?? '';
-        const offset = request.params?.offset ?? 0;
+        const parameters: IBandSearch = request.params as IBandSearch;
+        const { band, offset } = {
+            band: parameters?.band.trim() ?? '',
+            offset: Number(parameters?.offset) || 0,
+        } as IBandSearch;
 
         const data = await archivesSearchBand(band, offset);
 
@@ -50,7 +59,7 @@ const options = {
     handler: searchBand,
 };
 
-const search = async (fastify) => {
+const search = async (fastify: FastifyInstance) => {
     fastify.get('/search/:band', options);
     fastify.get('/search/:band/:offset', options);
 };

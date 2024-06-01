@@ -2,11 +2,15 @@
     "name": "metal-api",
     "version": "1.0.0",
     "description": "Metal API is a REST API written in JS for retrieving data from the website Encyclopedia Metallum (https://www.metal-archives.com/)",
-    "main": "index.js",
+    "main": "src/server.js",
     "scripts": {
-        "test": "node --test-reporter spec --test tests/",
-        "test:coverage": "c8 node --test tests/",
-        "lint": "eslint .",
+        "dev": "npx tsx watch src/server.ts",
+        "dist": "node dist/server.js",
+        "build": "tsc -p tsconfig.json",
+        "test": "npx tsx --test-reporter spec --test $(find ./tests -name '*.ts')",
+        "test:coverage": "c8 npx tsx --test tests/",
+        "lint": "esw .",
+        "lint:watch": "npm run lint -- --watch",
         "lint:fix": "eslint . --fix",
         "prepare": "husky"
     },
@@ -21,21 +25,27 @@
     },
     "homepage": "https://github.com/giacomocamerano/metal-api#readme",
     "dependencies": {
-        "esmock": "^2.6.5",
+        "@types/node": "^20.12.12",
         "fastify": "^4.27.0",
-        "node-html-parser": "^6.1.13"
+        "node-html-parser": "^6.1.13",
+        "typescript": "^5.4.5"
     },
     "type": "module",
     "devDependencies": {
         "@eslint/js": "^9.3.0",
+        "@types/eslint__js": "^8.42.3",
         "c8": "^9.1.0",
-        "eslint": "^9.3.0",
+        "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-unicorn": "^53.0.0",
+        "eslint-watch": "^8.0.0",
+        "esmock": "^2.6.5",
         "globals": "^15.3.0",
         "husky": "^8.0.0",
         "lint-staged": "^15.2.5",
         "pino-pretty": "^11.1.0",
-        "prettier": "^3.2.5"
+        "prettier": "^3.2.5",
+        "typescript-eslint": "^7.11.0"
     },
     "husky": {
         "hooks": {
@@ -45,7 +55,7 @@
         }
     },
     "lint-staged": {
-        "./src/**/*.{js,json,md}, ./tests/**/*.{js,json,md}": [
+        "./src/**/*.{js,json,md,ts}, ./tests/**/*.{js,json,md,ts}": [
             "prettier --write",
             "eslint --fix"
         ]

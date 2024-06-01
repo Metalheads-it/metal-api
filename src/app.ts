@@ -1,6 +1,6 @@
 import Fastify from 'fastify';
 
-const build = (options) => {
+const build = (options = {}) => {
     const fastify = Fastify(options);
 
     fastify.log.info('Start init');

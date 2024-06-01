@@ -1,4 +1,4 @@
-import { getJSON } from '../../../src/lib/fetch.js';
+import { getJSON } from '../../../src/lib/fetch.ts';
 import assert from 'node:assert';
 import { mock, describe, it } from 'node:test';
 import mockData from '../../mock_data/ajax-band-search-immortal.json' assert { type: 'json' };

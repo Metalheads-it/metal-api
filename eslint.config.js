@@ -1,4 +1,18 @@
 import globals from 'globals';
-import pluginJs from '@eslint/js';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
-export default [{ languageOptions: { globals: globals.node } }, pluginJs.configs.recommended];
+export default tseslint.config(
+    { languageOptions: { globals: globals.node }, ignores: ['*.js'] },
+    eslintPluginUnicorn.configs['flat/recommended'],
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    eslintConfigPrettier,
+    {
+        rules: {
+            'unicorn/no-array-reduce': 'off',
+        },
+    },
+);
