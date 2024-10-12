@@ -1,28 +1,27 @@
-import { Type, Static } from "@sinclair/typebox";
+import { Type, Static } from '@sinclair/typebox';
+import { bandSearchResultSchema } from '@src/shared/schema';
 
-export const searchBandParametersSchema = Type.Object({
+export const searchBandQuerySchema = Type.Object({
     band: Type.String({ minLength: 1 }),
     offset: Type.Optional(Type.Number({ minimum: 0 })),
-})
+});
 
-export type SearchBandParameter = Static<typeof searchBandParametersSchema>;
+export type SearchBandQuery = Static<typeof searchBandQuerySchema>;
 
 export const searchBandResponseSchema = Type.Object({
-    search: Type.String({ minLength: 1 }),
+    search: Type.String({ minLength: 1, example: 'immortal' }),
     offset: Type.Number({ minimum: 0 }),
     countTotal: Type.Number({ minimum: 0 }),
     countCurrent: Type.Number({ minimum: 0 }),
-    results: Type.Array(Type.Object({
-        band: Type.String({ minLength: 1 }),
-        genre: Type.String({ minLength: 1 }),
-        country: Type.String({ minLength: 1 }),
-    }))
-})
+    results: Type.Array(bandSearchResultSchema),
+});
 
 export type SearchBandResponseSchema = Static<typeof searchBandResponseSchema>;
 
 export const searchBandSchema = {
-    params: searchBandParametersSchema,
+    description: 'Search for bands',
+    tags: ['bands'],
+    querystring: searchBandQuerySchema,
     response: {
         200: searchBandResponseSchema,
     },
