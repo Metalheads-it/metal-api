@@ -1,5 +1,5 @@
 import { parse, HTMLElement } from 'node-html-parser';
-import type { BandSearchResult } from '../../../types/band.js';
+import type { BandSearchResult } from '../../../types/band';
 
 const getBandIdFromLink = (link: string | undefined): string | undefined => {
     return link?.split('/').at(-1) ?? undefined;

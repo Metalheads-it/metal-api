@@ -1,8 +1,8 @@
-import { build } from './app.js';
-import { options, port } from './config.js';
+import { build } from '@src/app';
+import { options, port } from './config';
 
 const start = async () => {
-    const fastify = build(options);
+    const fastify = await build(options);
     try {
         await fastify.listen({ port: port });
     } catch (error) {
