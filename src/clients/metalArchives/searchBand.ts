@@ -39,21 +39,27 @@ const extractBandInfo = (
     htmlString: string
 ): { band: string; link: string; id: number } => {
     const regex =
-        /<a href="https:\/\/www\.metal-archives\.com\/bands\/[^"]+\/(\d+)">([^<]+)<\/a>/
+        /<a href="(https:\/\/www\.metal-archives\.com\/bands\/[^"]+\/(\d+))">([^<]+)<\/a>/
 
     const match = regex.exec(htmlString)
 
     if (!match) {
-        throw new Error('Failed to parse band information from HTML string.')
+        throw new Error('Failed to parse band information from HTML string')
     }
 
-    const [html, id, band] = match
+    const [_, link, id, band] = match
 
-    if (!band || !id) {
-        throw new Error('Invalid band name or ID.')
+    if (!band) {
+        throw new Error('Invalid band name')
     }
 
-    const link = html.match(/href="([^"]+)"/)?.[1] || ''
+    if (!id) {
+        throw new Error('Invalid band ID')
+    }
+
+    if (!link) {
+        throw new Error('Failed to extract band link')
+    }
 
     return { band, link, id: Number.parseInt(id, 10) }
 }

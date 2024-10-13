@@ -70,10 +70,12 @@ export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
         validateRequestData(method, data, compiledSchemas)
 
         const axiosConfig: AxiosRequestConfig = {
-            method: method.toLowerCase() as AxiosRequestConfig['method'],
+            method: method.toLowerCase(),
             url: url,
-            params: method === 'GET' ? data : undefined,
-            data: method === 'GET' ? undefined : data
+            params: ['GET', 'DELETE'].includes(method) ? data : undefined,
+            data: ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)
+                ? data
+                : undefined
         }
 
         const response = await axios(axiosConfig)
@@ -81,7 +83,10 @@ export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
         if (compiledSchemas.response) {
             const valid = compiledSchemas.response(response.data)
             if (!valid) {
-                throw new Error('Response validation failed')
+                const errors = compiledSchemas.response.errors
+                throw new Error(
+                    `Response validation failed: ${ajv.errorsText(errors)}`
+                )
             }
         }
 

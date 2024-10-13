@@ -9,7 +9,7 @@ export default tseslint.config(
         languageOptions: { globals: globals.node }
     },
     {
-        ignores: ['*.js', 'dist/**/*']
+        ignores: ['*.js', 'dist/**/*', 'node_modules/**/*', 'coverage/**/*']
     },
     eslintPluginUnicorn.configs['flat/recommended'],
     eslint.configs.recommended,
@@ -28,7 +28,7 @@ export default tseslint.config(
             ],
             'no-unused-vars': 'off',
             '@typescript-eslint/no-unused-vars': [
-                'warn', // or "error"
+                'error',
                 {
                     argsIgnorePattern: '^_',
                     varsIgnorePattern: '^_',
