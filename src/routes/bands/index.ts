@@ -1,7 +1,11 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyPluginAsync, RegisterOptions } from 'fastify'
+import searchRoute from './handlers/search'
 
-async function routes(fastify: FastifyInstance) {
-    fastify.register(import('./search.js'));
+export type ServiceInfoRoutesOptions = RegisterOptions
+
+export const bandRoutes: FastifyPluginAsync<ServiceInfoRoutesOptions> = async (
+    fastify,
+    options
+) => {
+    await fastify.register(searchRoute, options)
 }
-
-export default routes;

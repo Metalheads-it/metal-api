@@ -1,20 +1,20 @@
 interface ILoggingConfig {
     transport: {
-        target: string;
+        target: string
         options: {
-            translateTime: string;
-            ignore: string;
-        };
-    };
+            translateTime: string
+            ignore: string
+        }
+    }
 }
 
 interface Config {
-    logger: ILoggingConfig | boolean;
+    logger: ILoggingConfig | boolean
 }
 
 const production: Config = {
-    logger: true,
-};
+    logger: true
+}
 
 const development: Config = {
     logger: {
@@ -22,14 +22,15 @@ const development: Config = {
             target: 'pino-pretty',
             options: {
                 translateTime: 'HH:MM:ss Z',
-                ignore: 'pid,hostname',
-            },
-        },
-    },
-};
+                ignore: 'pid,hostname'
+            }
+        }
+    }
+}
 
-const options = process.env.ENVIRONMENT === 'production' ? production : development;
+const options =
+    process.env.ENVIRONMENT === 'production' ? production : development
 
-const port = Number(process.env.PORT) || 3000;
+const port = Number(process.env.PORT) || 3000
 
-export { options, port };
+export { options, port }
