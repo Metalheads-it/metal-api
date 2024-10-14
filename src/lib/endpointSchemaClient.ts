@@ -1,9 +1,8 @@
 import { Static, TSchema } from '@sinclair/typebox'
 import { Data } from '@src/shared/types'
 import Ajv, { ValidateFunction } from 'ajv'
+import addFormats from 'ajv-formats'
 import axios, { AxiosRequestConfig } from 'axios'
-
-const ajv = new Ajv()
 
 export enum HttpMethod {
     GET = 'GET',
@@ -13,10 +12,17 @@ export enum HttpMethod {
     PATCH = 'PATCH'
 }
 
+type ResponseSchema =
+    | { [httpStatusCode: string]: TSchema; 200: TSchema }
+    | { [httpStatusCode: string]: TSchema; 201: TSchema }
+    | { [httpStatusCode: string]: TSchema; 204: TSchema }
+
 interface EndpointSchema {
+    headers?: TSchema
+    params?: TSchema
     querystring?: TSchema
     body?: TSchema
-    response: TSchema
+    response: ResponseSchema
 }
 
 export interface ClientOptions {
@@ -26,45 +32,57 @@ export interface ClientOptions {
 }
 
 interface CompiledSchema {
+    headers?: ValidateFunction<unknown>
+    params?: ValidateFunction<unknown>
     querystring?: ValidateFunction<unknown>
     body?: ValidateFunction<unknown>
-    response: ValidateFunction<unknown>
+    response: { [httpStatusCode: string]: ValidateFunction<unknown> }
 }
+
+const ajv = new Ajv()
+addFormats(ajv)
 
 const validateRequestData = (
     method: HttpMethod,
     data: Data,
     compiledSchemas: CompiledSchema
 ) => {
-    const schemaMap = {
-        GET: compiledSchemas.querystring,
-        POST: compiledSchemas.body,
-        PUT: compiledSchemas.body,
-        DELETE: compiledSchemas.querystring,
-        PATCH: compiledSchemas.body
+    const schemaValidator = ['GET', 'DELETE'].includes(method)
+        ? compiledSchemas.querystring
+        : compiledSchemas.body
+
+    if (schemaValidator && !schemaValidator(data)) {
+        throw new Error(
+            `Validation failed: ${ajv.errorsText(schemaValidator.errors)}`
+        )
     }
+}
 
-    const schemaValidator = schemaMap[method]
-
-    if (!schemaValidator) return
-
-    const valid = schemaValidator(data)
-    if (!valid) {
-        const errors = schemaValidator.errors
-        throw new Error(`Validation failed: ${ajv.errorsText(errors)}`)
-    }
+function compileResponseSchemas(responseSchema: {
+    [httpStatusCode: string]: TSchema
+}): CompiledSchema['response'] {
+    return Object.fromEntries(
+        Object.entries(responseSchema).map(([statusCode, schema]) => [
+            statusCode,
+            ajv.compile(schema)
+        ])
+    )
 }
 
 export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
     const compiledSchemas = {
+        headers: schema.headers ? ajv.compile(schema.headers) : undefined,
+        params: schema.params ? ajv.compile(schema.params) : undefined,
         querystring: schema.querystring
             ? ajv.compile(schema.querystring)
             : undefined,
         body: schema.body ? ajv.compile(schema.body) : undefined,
-        response: ajv.compile(schema.response)
+        response: compileResponseSchemas(schema.response)
     }
 
-    return async (options: ClientOptions): Promise<Static<T['response']>> => {
+    return async (
+        options: ClientOptions
+    ): Promise<Static<T['response'][keyof T['response']]>> => {
         const { method, url, data } = options
 
         validateRequestData(method, data, compiledSchemas)
@@ -80,14 +98,12 @@ export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
 
         const response = await axios(axiosConfig)
 
-        if (compiledSchemas.response) {
-            const valid = compiledSchemas.response(response.data)
-            if (!valid) {
-                const errors = compiledSchemas.response.errors
-                throw new Error(
-                    `Response validation failed: ${ajv.errorsText(errors)}`
-                )
-            }
+        const compiledResponse = compiledSchemas.response[response.status]
+
+        if (compiledResponse && !compiledResponse(response.data)) {
+            throw new Error(
+                `Response validation failed: ${ajv.errorsText(compiledResponse.errors)}`
+            )
         }
 
         return response.data

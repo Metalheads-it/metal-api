@@ -9,7 +9,7 @@ export const bandSearchResultSchema = Type.Object({
 })
 
 export const dataSchema = Type.Record(
-    Type.String(), // Keys must be strings
+    Type.String(),
     Type.Union([
         Type.String(),
         Type.Number(),
@@ -21,5 +21,5 @@ export const dataSchema = Type.Record(
 export const endpointSchema = Type.Object({
     querystring: Type.Optional(dataSchema),
     body: Type.Optional(dataSchema),
-    response: dataSchema
+    response: Type.Record(Type.Number(), dataSchema)
 })
