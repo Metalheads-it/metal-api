@@ -12,15 +12,11 @@ export enum HttpMethod {
     PATCH = 'PATCH'
 }
 
-type ResponseSchema =
-    | { [httpStatusCode: string]: TSchema; 200: TSchema }
-    | { [httpStatusCode: string]: TSchema; 201: TSchema }
-    | { [httpStatusCode: string]: TSchema; 204: TSchema }
+type ResponseSchema = { [httpStatusCode: string]: TSchema }
 
 interface EndpointSchema {
     headers?: TSchema
     params?: TSchema
-    querystring?: TSchema
     body?: TSchema
     response: ResponseSchema
 }
@@ -28,33 +24,42 @@ interface EndpointSchema {
 export interface ClientOptions {
     method: HttpMethod
     url: string
-    data: Data
+    params?: Data
+    body?: Data
 }
 
 interface CompiledSchema {
     headers?: ValidateFunction<unknown>
     params?: ValidateFunction<unknown>
-    querystring?: ValidateFunction<unknown>
     body?: ValidateFunction<unknown>
     response: { [httpStatusCode: string]: ValidateFunction<unknown> }
 }
+
+const successCodes = new Set([200, 201, 204])
 
 const ajv = new Ajv()
 addFormats(ajv)
 
 const validateRequestData = (
-    method: HttpMethod,
-    data: Data,
+    data: { params?: Data; body?: Data } = {},
     compiledSchemas: CompiledSchema
 ) => {
-    const schemaValidator = ['GET', 'DELETE'].includes(method)
-        ? compiledSchemas.querystring
-        : compiledSchemas.body
+    if (data.params && compiledSchemas.params) {
+        const valid = compiledSchemas.params(data.params)
+        if (!valid) {
+            throw new Error(
+                `Params validation failed: ${ajv.errorsText(compiledSchemas.params.errors)}`
+            )
+        }
+    }
 
-    if (schemaValidator && !schemaValidator(data)) {
-        throw new Error(
-            `Validation failed: ${ajv.errorsText(schemaValidator.errors)}`
-        )
+    if (data.body && compiledSchemas.body) {
+        const valid = compiledSchemas.body(data.body)
+        if (!valid) {
+            throw new Error(
+                `Body validation failed: ${ajv.errorsText(compiledSchemas.body.errors)}`
+            )
+        }
     }
 }
 
@@ -73,9 +78,6 @@ export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
     const compiledSchemas = {
         headers: schema.headers ? ajv.compile(schema.headers) : undefined,
         params: schema.params ? ajv.compile(schema.params) : undefined,
-        querystring: schema.querystring
-            ? ajv.compile(schema.querystring)
-            : undefined,
         body: schema.body ? ajv.compile(schema.body) : undefined,
         response: compileResponseSchemas(schema.response)
     }
@@ -83,29 +85,31 @@ export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
     return async (
         options: ClientOptions
     ): Promise<Static<T['response'][keyof T['response']]>> => {
-        const { method, url, data } = options
+        const { method, url, params, body } = options
 
-        validateRequestData(method, data, compiledSchemas)
+        validateRequestData({ params, body }, compiledSchemas)
 
         const axiosConfig: AxiosRequestConfig = {
             method: method.toLowerCase(),
             url: url,
-            params: ['GET', 'DELETE'].includes(method) ? data : undefined,
-            data: ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)
-                ? data
-                : undefined
+            params: params,
+            data: body
         }
 
         const response = await axios(axiosConfig)
 
-        const compiledResponse = compiledSchemas.response[response.status]
-
-        if (compiledResponse && !compiledResponse(response.data)) {
-            throw new Error(
-                `Response validation failed: ${ajv.errorsText(compiledResponse.errors)}`
-            )
+        if (successCodes.has(response.status)) {
+            // Success responses: validate only if the schema is defined
+            const compiledResponse = compiledSchemas.response[response.status]
+            if (compiledResponse && !compiledResponse(response.data)) {
+                throw new Error(
+                    `Response validation failed: ${ajv.errorsText(compiledResponse.errors)}`
+                )
+            }
+            return response.data
+        } else {
+            // Handle error responses (404, 400, 500, etc.)
+            throw new Error(`Error response: ${response.status}`)
         }
-
-        return response.data
     }
 }

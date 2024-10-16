@@ -14,7 +14,7 @@ export const searchBand = async (
     const bandData = await searchBandClient({
         method: HttpMethod.GET,
         url: 'https://www.metal-archives.com/search/ajax-band-search/',
-        data: {
+        params: {
             query: band,
             iDisplayStart: offset,
             field: 'name',
