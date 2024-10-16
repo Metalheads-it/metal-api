@@ -33,5 +33,7 @@ export type SearchBandResponse = Static<typeof searchBandResponseSchema>
 
 export const searchBandSchema = {
     querystring: searchBandQuerySchema,
-    response: searchBandResponseSchema
+    response: {
+        200: searchBandResponseSchema
+    }
 } satisfies Endpoint
