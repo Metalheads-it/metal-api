@@ -1,9 +1,8 @@
 import { Static, TSchema } from '@sinclair/typebox'
 import { Data } from '@src/shared/types'
 import Ajv, { ValidateFunction } from 'ajv'
+import addFormats from 'ajv-formats'
 import axios, { AxiosRequestConfig } from 'axios'
-
-const ajv = new Ajv()
 
 export enum HttpMethod {
     GET = 'GET',
@@ -13,83 +12,104 @@ export enum HttpMethod {
     PATCH = 'PATCH'
 }
 
+type ResponseSchema = { [httpStatusCode: string]: TSchema }
+
 interface EndpointSchema {
-    querystring?: TSchema
+    headers?: TSchema
+    params?: TSchema
     body?: TSchema
-    response: TSchema
+    response: ResponseSchema
 }
 
 export interface ClientOptions {
     method: HttpMethod
     url: string
-    data: Data
+    params?: Data
+    body?: Data
 }
 
 interface CompiledSchema {
-    querystring?: ValidateFunction<unknown>
+    headers?: ValidateFunction<unknown>
+    params?: ValidateFunction<unknown>
     body?: ValidateFunction<unknown>
-    response: ValidateFunction<unknown>
+    response: { [httpStatusCode: string]: ValidateFunction<unknown> }
 }
 
+const successCodes = new Set([200, 201, 204])
+
+const ajv = new Ajv()
+addFormats(ajv)
+
 const validateRequestData = (
-    method: HttpMethod,
-    data: Data,
+    data: { params?: Data; body?: Data } = {},
     compiledSchemas: CompiledSchema
 ) => {
-    const schemaMap = {
-        GET: compiledSchemas.querystring,
-        POST: compiledSchemas.body,
-        PUT: compiledSchemas.body,
-        DELETE: compiledSchemas.querystring,
-        PATCH: compiledSchemas.body
+    if (data.params && compiledSchemas.params) {
+        const valid = compiledSchemas.params(data.params)
+        if (!valid) {
+            throw new Error(
+                `Params validation failed: ${ajv.errorsText(compiledSchemas.params.errors)}`
+            )
+        }
     }
 
-    const schemaValidator = schemaMap[method]
-
-    if (!schemaValidator) return
-
-    const valid = schemaValidator(data)
-    if (!valid) {
-        const errors = schemaValidator.errors
-        throw new Error(`Validation failed: ${ajv.errorsText(errors)}`)
+    if (data.body && compiledSchemas.body) {
+        const valid = compiledSchemas.body(data.body)
+        if (!valid) {
+            throw new Error(
+                `Body validation failed: ${ajv.errorsText(compiledSchemas.body.errors)}`
+            )
+        }
     }
+}
+
+function compileResponseSchemas(responseSchema: {
+    [httpStatusCode: string]: TSchema
+}): CompiledSchema['response'] {
+    return Object.fromEntries(
+        Object.entries(responseSchema).map(([statusCode, schema]) => [
+            statusCode,
+            ajv.compile(schema)
+        ])
+    )
 }
 
 export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
     const compiledSchemas = {
-        querystring: schema.querystring
-            ? ajv.compile(schema.querystring)
-            : undefined,
+        headers: schema.headers ? ajv.compile(schema.headers) : undefined,
+        params: schema.params ? ajv.compile(schema.params) : undefined,
         body: schema.body ? ajv.compile(schema.body) : undefined,
-        response: ajv.compile(schema.response)
+        response: compileResponseSchemas(schema.response)
     }
 
-    return async (options: ClientOptions): Promise<Static<T['response']>> => {
-        const { method, url, data } = options
+    return async (
+        options: ClientOptions
+    ): Promise<Static<T['response'][keyof T['response']]>> => {
+        const { method, url, params, body } = options
 
-        validateRequestData(method, data, compiledSchemas)
+        validateRequestData({ params, body }, compiledSchemas)
 
         const axiosConfig: AxiosRequestConfig = {
             method: method.toLowerCase(),
             url: url,
-            params: ['GET', 'DELETE'].includes(method) ? data : undefined,
-            data: ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)
-                ? data
-                : undefined
+            params: params,
+            data: body
         }
 
         const response = await axios(axiosConfig)
 
-        if (compiledSchemas.response) {
-            const valid = compiledSchemas.response(response.data)
-            if (!valid) {
-                const errors = compiledSchemas.response.errors
+        if (successCodes.has(response.status)) {
+            // Success responses: validate only if the schema is defined
+            const compiledResponse = compiledSchemas.response[response.status]
+            if (compiledResponse && !compiledResponse(response.data)) {
                 throw new Error(
-                    `Response validation failed: ${ajv.errorsText(errors)}`
+                    `Response validation failed: ${ajv.errorsText(compiledResponse.errors)}`
                 )
             }
+            return response.data
+        } else {
+            // Handle error responses (404, 400, 500, etc.)
+            throw new Error(`Error response: ${response.status}`)
         }
-
-        return response.data
     }
 }
