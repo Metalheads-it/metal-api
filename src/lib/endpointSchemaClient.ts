@@ -97,6 +97,7 @@ export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
         }
 
         const response = await axios(axiosConfig)
+        console.log(response.data.aaData)
 
         if (successCodes.has(response.status)) {
             // Success responses: validate only if the schema is defined

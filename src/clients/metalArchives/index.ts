@@ -1,13 +1,19 @@
 import { FastifyInstance } from 'fastify'
 import { createEndpointClient } from '@src/lib/endpointSchemaClient'
-import { searchBandSchema } from './schema/searchBand'
-import { searchBand } from './searchBand'
+import { searchBandAdvancedSchema } from './schema/searchBandAdvanced'
+import { searchBandAdvanced } from './searchBandAdvanced'
 
-const searchBandClient = createEndpointClient(searchBandSchema)
+const searchBandAdvancedClient = createEndpointClient(searchBandAdvancedSchema)
 
 export const createMetalArchivesClient = (_fastify: FastifyInstance) => ({
     searchBand: async (band: string = '', offset: number = 0) => {
-        return searchBand(band, offset, searchBandClient)
+        return searchBandAdvanced(
+            band,
+            offset,
+            true,
+            {},
+            searchBandAdvancedClient
+        )
     }
 })
 
