@@ -14,7 +14,7 @@ export enum HttpMethod {
 
 type ResponseSchema = { [httpStatusCode: string]: TSchema }
 
-interface EndpointSchema {
+export interface EndpointSchema {
     headers?: TSchema
     params?: TSchema
     body?: TSchema
@@ -40,7 +40,7 @@ const successCodes = new Set([200, 201, 204])
 const ajv = new Ajv()
 addFormats(ajv)
 
-const validateRequestData = (
+export const validateRequestData = (
     data: { params?: Data; body?: Data } = {},
     compiledSchemas: CompiledSchema
 ) => {
@@ -63,9 +63,9 @@ const validateRequestData = (
     }
 }
 
-function compileResponseSchemas(responseSchema: {
+export const compileResponseSchemas = (responseSchema: {
     [httpStatusCode: string]: TSchema
-}): CompiledSchema['response'] {
+}): CompiledSchema['response'] => {
     return Object.fromEntries(
         Object.entries(responseSchema).map(([statusCode, schema]) => [
             statusCode,
@@ -97,7 +97,6 @@ export const createEndpointClient = <T extends EndpointSchema>(schema: T) => {
         }
 
         const response = await axios(axiosConfig)
-        console.log(response.data.aaData)
 
         if (successCodes.has(response.status)) {
             // Success responses: validate only if the schema is defined

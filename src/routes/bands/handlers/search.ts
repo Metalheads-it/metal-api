@@ -4,14 +4,14 @@ import { ServiceInfoRoutesOptions } from '../index'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 
 const searchBand = async (data: SearchBandQuery, fastify: FastifyInstance) => {
-    const { band, offset = 0 } = data
+    const { band, offset } = data
 
     const { countTotal, countCurrent, results } =
         await fastify.metalArchives.searchBand(band, offset)
 
     return {
         search: band,
-        offset,
+        offset: offset ?? 0,
         countTotal,
         countCurrent,
         results

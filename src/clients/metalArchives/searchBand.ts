@@ -4,6 +4,7 @@ import { BandSearchResult } from '@src/shared/types'
 import { ClientOptions } from '@src/lib/endpointSchemaClient'
 import { SearchBandResponse } from './schema/searchBand'
 import { extractBandInfo } from './common'
+import { config } from '@src/config'
 
 type SearchBandClient = (options: ClientOptions) => Promise<SearchBandResponse>
 
@@ -14,7 +15,7 @@ export const searchBand = async (
 ) => {
     const bandData = await searchBandClient({
         method: HttpMethod.GET,
-        url: 'https://www.metal-archives.com/search/ajax-band-search/',
+        url: config.metalArchives.searchBandUrl,
         params: {
             query: band,
             iDisplayStart: offset,

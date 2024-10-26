@@ -28,9 +28,16 @@ const development: Config = {
     }
 }
 
-const options =
+export const options =
     process.env.ENVIRONMENT === 'production' ? production : development
 
-const port = Number(process.env.PORT) || 3000
+export const port = Number(process.env.PORT) || 3000
 
-export { options, port }
+export const config = {
+    metalArchives: {
+        searchBandUrl:
+            'https://www.metal-archives.com/search/ajax-band-search/',
+        searchBandAdvancedUrl:
+            'https://www.metal-archives.com/search/ajax-advanced/searching/bands/'
+    }
+}

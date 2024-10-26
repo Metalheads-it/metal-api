@@ -1,18 +1,19 @@
 import { HttpMethod } from '@src/shared/constants'
 import { BandSearchResult } from '@src/shared/types'
-import { ClientOptions } from '@src/lib/endpointSchemaClient'
 import {
     CountryCode,
     SearchBandAdvancedEntry,
     SearchBandAdvancedQuery,
-    SearchBandAdvancedResponse,
     Status
 } from './schema/searchBandAdvanced'
 import { extractBandInfo } from './common'
+import { config } from '@src/config'
+import { createEndpointClient } from '@src/lib/endpointSchemaClient'
+import { searchBandAdvancedSchema } from './schema/searchBandAdvanced'
 
-type SearchBandAdvancedClient = (
-    options: ClientOptions
-) => Promise<SearchBandAdvancedResponse>
+export const searchBandAdvancedClient = createEndpointClient(
+    searchBandAdvancedSchema
+)
 
 export const searchBandAdvanced = async (
     band: string = '',
@@ -28,8 +29,7 @@ export const searchBandAdvanced = async (
         themes?: string
         location?: string
         bandLabelName?: string
-    },
-    searchBandAdvancedClient: SearchBandAdvancedClient
+    }
 ) => {
     const {
         status = [1, 2, 3, 4, 5, 6],
@@ -56,7 +56,7 @@ export const searchBandAdvanced = async (
 
     const bandData = await searchBandAdvancedClient({
         method: HttpMethod.GET,
-        url: 'https://www.metal-archives.com/search/ajax-advanced/searching/bands/',
+        url: config.metalArchives.searchBandAdvancedUrl,
         params: {
             bandName: band,
             exactBandMatch,
@@ -87,8 +87,9 @@ export const searchBandAdvanced = async (
 }
 
 const transformSearchResults = (
-    entries: SearchBandAdvancedEntry[]
+    entries: SearchBandAdvancedEntry[] | undefined
 ): BandSearchResult[] => {
+    if (entries === undefined) return []
     return entries.map(
         ([htmlString, genre, country, location, themes, year, label]) => {
             const { band, link, id } = extractBandInfo(htmlString)
