@@ -1,3 +1,5 @@
+import he from 'he'
+
 export const extractBandInfo = (
     htmlString: string
 ): { band: string; link: string; id: number } => {
@@ -10,5 +12,5 @@ export const extractBandInfo = (
         throw new Error('Failed to parse band information from HTML string')
     }
 
-    return { band, link, id: Number.parseInt(id, 10) }
+    return { band: he.decode(band).trim(), link, id: Number.parseInt(id, 10) }
 }
