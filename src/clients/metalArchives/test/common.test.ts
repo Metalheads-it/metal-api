@@ -1,7 +1,7 @@
 import { extractBandInfo } from '../common'
 
 describe('extractBandInfo', () => {
-    it('should throw an error if the HTML string does not match the regex pattern (line 10)', () => {
+    it('should throw an error if the HTML string does not match the regex pattern', () => {
         const invalidHtmlString = '<p>No link here</p>'
 
         expect(() => extractBandInfo(invalidHtmlString)).toThrow(
