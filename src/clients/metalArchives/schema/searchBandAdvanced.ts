@@ -50,13 +50,17 @@ export const searchBandAdvancedQuerySchema = Type.Object({
     yearCreationFrom: Type.Optional(
         Type.Number({
             description: 'Year of creation from',
-            examples: [2000, 2010]
+            examples: [2000, 2010],
+            minimum: 1900,
+            maximum: new Date().getFullYear()
         })
     ),
     yearCreationTo: Type.Optional(
         Type.Number({
             description: 'Year of creation to',
-            examples: [2000, 2010]
+            examples: [2000, 2010],
+            minimum: 1900,
+            maximum: new Date().getFullYear()
         })
     ),
     bandNotes: Type.Optional(
