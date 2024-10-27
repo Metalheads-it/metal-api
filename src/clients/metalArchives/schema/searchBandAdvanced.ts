@@ -1,14 +1,20 @@
 import { Static, Type } from '@sinclair/typebox'
 import { Endpoint } from '@src/shared/types'
 
-const statusSchema = Type.Union([
-    Type.Literal(1, { description: 'active' }),
-    Type.Literal(2, { description: 'on hold' }),
-    Type.Literal(3, { description: 'split-up' }),
-    Type.Literal(4, { description: 'Unknown' }),
-    Type.Literal(5, { description: 'Changed name' }),
-    Type.Literal(6, { description: 'Disputed' })
-])
+export enum BAND_STATUS {
+    ACTIVE = 1,
+    ON_HOLD = 2,
+    SPLIT_UP = 3,
+    UNKNOWN = 4,
+    CHANGED_NAME = 5,
+    DISPUTED = 6
+}
+
+const statusSchema = Type.Union(
+    Object.values(BAND_STATUS)
+        .filter((value): value is BAND_STATUS => typeof value === 'number')
+        .map(value => Type.Literal(value, { description: BAND_STATUS[value] }))
+)
 
 export type Status = Static<typeof statusSchema>
 

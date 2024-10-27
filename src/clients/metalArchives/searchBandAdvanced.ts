@@ -1,6 +1,7 @@
 import { HttpMethod } from '@src/shared/constants'
 import { BandSearchResult } from '@src/shared/types'
 import {
+    BAND_STATUS,
     CountryCode,
     SearchBandAdvancedEntry,
     SearchBandAdvancedQuery,
@@ -32,7 +33,9 @@ export const searchBandAdvanced = async (
     }
 ) => {
     const {
-        status = [1, 2, 3, 4, 5, 6],
+        status = Object.values(BAND_STATUS).filter(
+            (value): value is BAND_STATUS => typeof value === 'number'
+        ),
         themes = '*',
         location = '*',
         bandLabelName = '*'
