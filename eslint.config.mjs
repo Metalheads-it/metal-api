@@ -18,6 +18,7 @@ export default tseslint.config(
     {
         rules: {
             'unicorn/no-array-reduce': 'off',
+            'unicorn/numeric-separators-style': 'off',
             'unicorn/filename-case': [
                 'error',
                 {
