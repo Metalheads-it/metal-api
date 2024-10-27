@@ -66,7 +66,7 @@ export const searchBandAdvancedQuerySchema = Type.Object({
         Type.String({ description: 'Search by themes', default: '*' })
     ),
     location: Type.Optional(
-        Type.String({ description: 'Search by themes', default: '*' })
+        Type.String({ description: 'Search by location', default: '*' })
     ),
     bandLabelName: Type.Optional(
         Type.String({ description: 'Search by label', default: '*' })
