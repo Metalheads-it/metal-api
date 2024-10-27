@@ -16,7 +16,7 @@ export const searchBandResponseSchema = Type.Object({
     results: Type.Array(bandSearchResultSchema)
 })
 
-export type SearchBandResponseSchema = Static<typeof searchBandResponseSchema>
+export type SearchBandResponse = Static<typeof searchBandResponseSchema>
 
 export const searchBandSchema = {
     description: 'Search for bands',
