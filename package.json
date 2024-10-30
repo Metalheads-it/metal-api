@@ -44,6 +44,7 @@
         "fastify": "^5.0.0",
         "fastify-plugin": "^5.0.1",
         "he": "^1.2.0",
+        "pino-pretty": "^11.3.0",
         "typescript": "^5.4.5"
     },
     "devDependencies": {
@@ -63,7 +64,6 @@
         "jest-junit": "^16.0.0",
         "lint-staged": "^15.2.5",
         "nock": "^13.5.5",
-        "pino-pretty": "^11.1.0",
         "prettier": "^3.2.5",
         "resolve-tspaths": "^0.8.22",
         "rimraf": "^6.0.1",
