@@ -1,22 +1,33 @@
-interface ILoggingConfig {
-    transport: {
-        target: string
-        options: {
-            translateTime: string
-            ignore: string
+import envSchema from 'env-schema'
+import type { FromSchema } from 'json-schema-to-ts'
+
+const schema = {
+    type: 'object',
+    properties: {
+        ENVIRONMENT: {
+            type: 'string',
+            default: 'development'
+        },
+        PORT: {
+            type: 'number',
+            default: '3000'
         }
-    }
-}
+    },
+    required: ['ENVIRONMENT', 'PORT']
+} as const
 
-interface Config {
-    logger: ILoggingConfig | boolean
-}
+const configuration: FromSchema<typeof schema> = envSchema({
+    dotenv: true,
+    schema
+})
 
-const production: Config = {
+const isProduction = process.env.ENVIRONMENT === 'production' ? true : false
+
+const productionLogging = {
     logger: true
 }
 
-const development: Config = {
+const developmentLogging = {
     logger: {
         transport: {
             target: 'pino-pretty',
@@ -28,12 +39,12 @@ const development: Config = {
     }
 }
 
-export const options =
-    process.env.ENVIRONMENT === 'production' ? production : development
-
-export const port = Number(process.env.PORT) || 3000
-
 export const config = {
+    isProduction,
+    server: {
+        port: configuration.PORT || 3000
+    },
+    logger: isProduction ? productionLogging : developmentLogging,
     metalArchives: {
         searchBandUrl:
             'https://www.metal-archives.com/search/ajax-band-search/',

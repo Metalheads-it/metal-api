@@ -1,10 +1,10 @@
 import { build } from '@src/app'
-import { options, port } from './config'
+import { config } from './config'
 
 const start = async () => {
-    const fastify = await build(options)
+    const fastify = await build(config)
     try {
-        await fastify.listen({ port: port })
+        await fastify.listen({ port: config.server.port })
     } catch (error) {
         fastify.log.error(error)
         throw error
