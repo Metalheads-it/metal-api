@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Pull Request Check
 
 on:
     pull_request:
@@ -11,6 +11,7 @@ jobs:
         strategy:
             matrix:
                 node-version: [22.x]
+
         steps:
             - uses: actions/checkout@v4
             - name: Use Node.js ${{ matrix.node-version }}
@@ -22,3 +23,18 @@ jobs:
             - run: npm run lint
             - run: npm run build --if-present
             - run: npm test
+
+    docker-build:
+        runs-on: ubuntu-latest
+
+        # Ensures the docker-build job runs after the build job
+        needs: build
+
+        steps:
+            - uses: actions/checkout@v4
+            - name: Build Docker image for validation
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  tags: user/repo-name:pr-check # Temporary tag for PR check
+                  push: false # Disable pushing to Docker registry

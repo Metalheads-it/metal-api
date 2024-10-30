@@ -22,12 +22,15 @@ FROM alpine:3
 WORKDIR /usr/src/app
 
 # Add required binaries
-RUN apk update && apk add --no-cache libstdc++=~13.2.1 dumb-init=~1.2.5 \
-  && addgroup -g 1000 node && adduser -u 1000 -G node -s /bin/sh -D node \
-  && chown node:node ./
+RUN apk add --no-cache libstdc++ dumb-init \
+  && addgroup -g 1000 node && adduser -u 1000 -G node -s /bin/sh -D node
 
 COPY --from=build-env /usr/local/bin/node /usr/local/bin/
 COPY --from=build-env /usr/local/bin/docker-entrypoint.sh /usr/local/bin/
+
+# Adjust ownership after copying files
+RUN chown -R node:node /usr/src/app
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 USER node
