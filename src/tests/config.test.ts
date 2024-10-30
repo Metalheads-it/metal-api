@@ -1,9 +1,11 @@
 describe('Environment-based configuration', () => {
     const originalEnvironment = process.env.ENVIRONMENT
+    const originalPort = process.env.PORT
 
     afterEach(() => {
         jest.resetModules()
         process.env.ENVIRONMENT = originalEnvironment
+        process.env.PORT = originalPort
     })
 
     it('should set options to production config when ENVIRONMENT is "production"', async () => {

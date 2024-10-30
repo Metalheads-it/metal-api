@@ -17,7 +17,7 @@
         "prepare": "husky install",
         "start": "DOTENV_CONFIG_PATH=.env node -r dotenv/config -r ./build/index.js",
         "start:dev": "DOTENV_CONFIG_PATH=.env nodemon -r dotenv/config -w ./src src/index.ts --dev | pino-pretty -clSt",
-        "test": "jest --collect-coverage --runInBand ./tests ./src"
+        "test": "jest --collect-coverage ./tests ./src"
     },
     "ts-node": {
         "swc": true

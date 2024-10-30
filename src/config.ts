@@ -13,7 +13,7 @@ const schema = {
             default: '3000'
         }
     },
-    required: ['ENVIRONMENT', 'PORT']
+    required: ['ENVIRONMENT']
 } as const
 
 const configuration: FromSchema<typeof schema> = envSchema({
@@ -42,7 +42,7 @@ const developmentLogging = {
 export const config = {
     isProduction,
     server: {
-        port: configuration.PORT || 3000
+        port: configuration.PORT
     },
     logger: isProduction ? productionLogging : developmentLogging,
     metalArchives: {
