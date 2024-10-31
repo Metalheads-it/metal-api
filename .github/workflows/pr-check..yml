@@ -36,5 +36,16 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                   context: .
-                  tags: user/repo-name:pr-check # Temporary tag for PR check
+                  tags: metalheads/metal-api:pr-${{ github.event.pull_request.number }}
                   push: false # Disable pushing to Docker registry
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+            - name: Run Trivy vulnerability scanner
+              uses: aquasecurity/trivy-action@master
+              with:
+                  image-ref: metalheads/metal-api:pr-${{ github.event.pull_request.number }}
+                  format: 'table'
+                  exit-code: '1'
+                  ignore-unfixed: true
+                  vuln-type: 'os,library'
+                  severity: 'CRITICAL,HIGH'
