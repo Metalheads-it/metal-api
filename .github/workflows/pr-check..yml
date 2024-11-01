@@ -24,6 +24,13 @@ jobs:
             - run: npm run build --if-present
             - run: npm test
 
+            - name: Upload test coverage
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage
+                  path: coverage/
+                  if-no-files-found: warn
+
     docker-build:
         runs-on: ubuntu-latest
 
@@ -42,21 +49,22 @@ jobs:
               with:
                   context: .
                   tags: metalheads/metal-api:pr-${{ github.event.pull_request.number }}
-                  push: false # Disable pushing to Docker registry
+                  push: false # Keeps the image local to the runner
+                  load: true # Loads the image into the local Docker daemon
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
-                  build-args: |
-                      BUILDTIME=${{ github.sha }}
-                      VERSION=${{ github.ref }}
 
             - name: Save Docker image as an artifact
               run: docker save metalheads/metal-api:pr-${{ github.event.pull_request.number }} -o metal-api.tar
 
             - name: Upload image artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: metal-api-image
                   path: metal-api.tar
+
+            - name: Verify image tar exists before upload
+              run: ls -l metal-api.tar
 
     vulnerability-scan:
         runs-on: ubuntu-latest
@@ -67,7 +75,7 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Download image artifact
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: metal-api-image
 
