@@ -73,6 +73,14 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            # Install Trivy
+            - name: Install Trivy
+              run: |
+                  sudo apt-get update -y
+                  sudo apt-get install -y wget
+                  wget https://github.com/aquasecurity/trivy/releases/download/v0.56.1/trivy_0.56.1_Linux-64bit.deb
+                  sudo dpkg -i trivy_0.56.1_Linux-64bit.deb
+
             # Cache Trivy DB
             - name: Cache Trivy DB
               uses: actions/cache@v4
