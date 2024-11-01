@@ -10,7 +10,7 @@ const schema = {
         },
         PORT: {
             type: 'number',
-            default: '3000'
+            default: 3000
         }
     },
     required: ['ENVIRONMENT']
