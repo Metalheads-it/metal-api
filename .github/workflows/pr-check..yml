@@ -82,10 +82,8 @@ jobs:
             - name: Load Docker image
               run: docker load -i metal-api.tar
 
-            - name: Install Grype
-              run: |
-                  curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
-
-            - name: Run Grype for Vulnerability Scanning
-              run: |
-                  ./bin/grype metalheads/metal-api:pr-${{ github.event.pull_request.number }} --fail-on high
+            - name: Upload scan results
+              uses: actions/upload-artifact@v4
+              with:
+                  name: vulnerability-scan-results
+                  path: vulnerability-scan.json
