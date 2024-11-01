@@ -68,59 +68,31 @@ jobs:
 
     vulnerability-scan:
         runs-on: ubuntu-latest
+
         needs: docker-build # Runs after docker-build job
 
         steps:
             - uses: actions/checkout@v4
 
-            # Install Trivy
-            - name: Install Trivy
-              run: |
-                  sudo apt-get update -y
-                  sudo apt-get install -y wget
-                  wget https://github.com/aquasecurity/trivy/releases/download/v0.56.1/trivy_0.56.1_Linux-64bit.deb
-                  sudo dpkg -i trivy_0.56.1_Linux-64bit.deb
-
-            # Cache Trivy DB
-            - name: Cache Trivy DB
-              uses: actions/cache@v4
-              with:
-                  path: ~/.cache/trivy/db
-                  key: trivy-db-${{ github.run_id }}
-                  restore-keys: |
-                      trivy-db-
-
-            # Cache Trivy Policies
-            - name: Cache Trivy Policies
-              uses: actions/cache@v4
-              with:
-                  path: ~/.cache/trivy/policy
-                  key: trivy-policies-${{ github.run_id }}
-                  restore-keys: |
-                      trivy-policies-
-
-            # Pre-download Trivy DB and Policies
-            - name: Pre-download Trivy DB and Policies
-              run: |
-                  mkdir -p ~/.cache/trivy
-                  trivy image --download-db-only
-                  trivy --scanners config --download-policies
-              env:
-                  TRIVY_CACHE_DIR: ~/.cache/trivy
-
-            # Download image artifact
             - name: Download image artifact
               uses: actions/download-artifact@v4
               with:
                   name: metal-api-image
 
-            # Load Docker image
             - name: Load Docker image
               run: docker load -i metal-api.tar
 
-            # Run Trivy vulnerability scan
-            - name: Run Trivy Scan
-              run: trivy image metalheads/metal-api:pr-${{ github.event.pull_request.number }}
+            - name: Run Trivy vulnerability scanner
+              uses: aquasecurity/trivy-action@master
               env:
-                  TRIVY_CACHE_DIR: ~/.cache/trivy
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  image-ref: metalheads/metal-api:pr-${{ github.event.pull_request.number }}
+                  format: 'table'
+                  exit-code: '1'
+                  ignore-unfixed: true
+                  vuln-type: 'os,library'
+                  severity: 'CRITICAL,HIGH'
+                  scanners: 'vuln,secret,config'
+                  timeout: '10m'
+                  list-all-pkgs: true
