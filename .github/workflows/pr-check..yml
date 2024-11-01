@@ -82,6 +82,10 @@ jobs:
             - name: Load Docker image
               run: docker load -i metal-api.tar
 
-            - name: Run Docker Scout for Vulnerability Scanning
+            - name: Install Grype
               run: |
-                  docker scout quickview metalheads/metal-api:pr-${{ github.event.pull_request.number }}
+                  curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
+
+            - name: Run Grype for Vulnerability Scanning
+              run: |
+                  ./bin/grype metalheads/metal-api:pr-${{ github.event.pull_request.number }} --fail-on high
