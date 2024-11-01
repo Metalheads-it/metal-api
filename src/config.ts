@@ -6,10 +6,13 @@ const schema = {
     properties: {
         ENVIRONMENT: {
             type: 'string',
+            enum: ['development', 'production', 'test'],
             default: 'development'
         },
         PORT: {
             type: 'number',
+            minimum: 1,
+            maximum: 65535,
             default: 3000
         }
     },
