@@ -12,7 +12,8 @@ const config: Config.InitialOptions = {
     reporters: ['default', 'jest-junit'],
     moduleNameMapper: {
         '^@src/(.*)$': '<rootDir>/src/$1'
-    }
+    },
+    testPathIgnorePatterns: ['/node_modules/', '/build/', '/dist/']
 }
 
 export default config

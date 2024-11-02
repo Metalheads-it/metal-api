@@ -1,17 +1,19 @@
 describe('Environment-based configuration', () => {
     const originalEnvironment = process.env.ENVIRONMENT
+    const originalPort = process.env.PORT
 
     afterEach(() => {
         jest.resetModules()
         process.env.ENVIRONMENT = originalEnvironment
+        process.env.PORT = originalPort
     })
 
     it('should set options to production config when ENVIRONMENT is "production"', async () => {
         process.env.ENVIRONMENT = 'production'
 
-        const { options } = await import('@src/config')
+        const { config } = await import('@src/config')
 
-        expect(options).toEqual({
+        expect(config.logger).toEqual({
             logger: true
         })
     })
@@ -19,9 +21,9 @@ describe('Environment-based configuration', () => {
     it('should set options to development config when ENVIRONMENT is not "production"', async () => {
         process.env.ENVIRONMENT = 'development'
 
-        const { options } = await import('@src/config')
+        const { config } = await import('@src/config')
 
-        expect(options).toEqual({
+        expect(config.logger).toEqual({
             logger: {
                 transport: {
                     target: 'pino-pretty',

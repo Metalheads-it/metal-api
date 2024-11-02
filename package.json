@@ -17,7 +17,7 @@
         "prepare": "husky install",
         "start": "DOTENV_CONFIG_PATH=.env node -r dotenv/config -r ./build/index.js",
         "start:dev": "DOTENV_CONFIG_PATH=.env nodemon -r dotenv/config -w ./src src/index.ts --dev | pino-pretty -clSt",
-        "test": "jest --collect-coverage --runInBand ./tests ./src"
+        "test": "jest --collect-coverage ./tests ./src"
     },
     "ts-node": {
         "swc": true
@@ -41,10 +41,12 @@
         "ajv-formats": "^3.0.1",
         "axios": "^1.7.7",
         "dotenv": "^16.4.5",
+        "env-schema": "^6.0.0",
         "fastify": "^5.0.0",
         "fastify-plugin": "^5.0.1",
         "he": "^1.2.0",
         "pino-pretty": "^11.3.0",
+        "json-schema-to-ts": "^3.1.1",
         "typescript": "^5.4.5"
     },
     "devDependencies": {
