@@ -86,9 +86,8 @@ jobs:
               run: |
                   curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
 
-            - name: Run Grype for Vulnerability Scanning
-              run: |
-                  ./bin/grype metalheads/metal-api:pr-${{ github.event.pull_request.number }} --fail-on high -o json > vulnerability-scan.json
+            - name: Run Grype and Save JSON Results
+              run: ./bin/grype metalheads/metal-api:pr-${{ github.event.pull_request.number }} --fail-on high -o json | tee vulnerability-scan.json
 
             - name: Upload scan results
               uses: actions/upload-artifact@v4
