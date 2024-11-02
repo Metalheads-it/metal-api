@@ -57,14 +57,14 @@ jobs:
             - name: Save Docker image as an artifact
               run: docker save metalheads/metal-api:pr-${{ github.event.pull_request.number }} -o metal-api.tar
 
+            - name: Verify image tar exists before upload
+              run: ls -l metal-api.tar
+
             - name: Upload image artifact
               uses: actions/upload-artifact@v4
               with:
                   name: metal-api-image
                   path: metal-api.tar
-
-            - name: Verify image tar exists before upload
-              run: ls -l metal-api.tar
 
     vulnerability-scan:
         runs-on: ubuntu-latest
@@ -82,17 +82,15 @@ jobs:
             - name: Load Docker image
               run: docker load -i metal-api.tar
 
-            - name: Run Trivy vulnerability scanner
-              uses: aquasecurity/trivy-action@master
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Install Grype
+              run: |
+                  curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh
+
+            - name: Run Grype and Save JSON Results
+              run: ./bin/grype metalheads/metal-api:pr-${{ github.event.pull_request.number }} --fail-on high -o json | tee vulnerability-scan.json
+
+            - name: Upload scan results
+              uses: actions/upload-artifact@v4
               with:
-                  image-ref: metalheads/metal-api:pr-${{ github.event.pull_request.number }}
-                  format: 'table'
-                  exit-code: '1'
-                  ignore-unfixed: true
-                  vuln-type: 'os,library'
-                  severity: 'CRITICAL,HIGH'
-                  scanners: 'vuln,secret,config'
-                  timeout: '10m'
-                  list-all-pkgs: true
+                  name: vulnerability-scan-results
+                  path: vulnerability-scan.json
