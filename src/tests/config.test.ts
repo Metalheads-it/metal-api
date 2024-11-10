@@ -13,9 +13,7 @@ describe('Environment-based configuration', () => {
 
         const { config } = await import('@src/config')
 
-        expect(config.logger).toEqual({
-            logger: true
-        })
+        expect(config.logger).toEqual(true)
     })
 
     it('should set options to development config when ENVIRONMENT is not "production"', async () => {
@@ -24,13 +22,11 @@ describe('Environment-based configuration', () => {
         const { config } = await import('@src/config')
 
         expect(config.logger).toEqual({
-            logger: {
-                transport: {
-                    target: 'pino-pretty',
-                    options: {
-                        translateTime: 'HH:MM:ss Z',
-                        ignore: 'pid,hostname'
-                    }
+            transport: {
+                target: 'pino-pretty',
+                options: {
+                    translateTime: 'HH:MM:ss Z',
+                    ignore: 'pid,hostname'
                 }
             }
         })

@@ -26,18 +26,14 @@ const configuration: FromSchema<typeof schema> = envSchema({
 
 const isProduction = process.env.ENVIRONMENT === 'production' ? true : false
 
-const productionLogging = {
-    logger: true
-}
+const productionLogging = true
 
 const developmentLogging = {
-    logger: {
-        transport: {
-            target: 'pino-pretty',
-            options: {
-                translateTime: 'HH:MM:ss Z',
-                ignore: 'pid,hostname'
-            }
+    transport: {
+        target: 'pino-pretty',
+        options: {
+            translateTime: 'HH:MM:ss Z',
+            ignore: 'pid,hostname'
         }
     }
 }
