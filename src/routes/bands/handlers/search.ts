@@ -34,7 +34,7 @@ export const searchRoute: FastifyPluginAsync<
 
             const response = await searchBand(data, fastify)
 
-            reply.code(200).send(response)
+            return reply.code(200).send(response)
         }
     })
 }
