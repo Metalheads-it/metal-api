@@ -49,6 +49,21 @@ describe('Search Band', () => {
         expect(nock.isDone()).toBe(true)
     })
 
+    it('Should return search results, supply bandname, offset and exactBandMatch', async () => {
+        nock(config.metalArchives.searchBandAdvancedUrl)
+            .get('/')
+            .query(true)
+            .reply(200, searchBandAdvancedResponseFixture)
+
+        const response = await server.inject({
+            method: 'GET',
+            url: '/bands/search/?band=immortal&offset=0&exactBandMatch=true'
+        })
+
+        expect(response.statusCode).toEqual(200)
+        expect(nock.isDone()).toBe(true)
+    })
+
     it('Should handle empty band name', async () => {
         const response = await server.inject({
             method: 'GET',

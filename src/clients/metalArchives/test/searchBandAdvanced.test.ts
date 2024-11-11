@@ -50,8 +50,7 @@ describe('searchBandAdvanced', () => {
             url: 'https://mock-api.com/search',
             params: {
                 ...searchBandAdvancedQueryFixture,
-                bandName: '',
-                exactBandMatch: false
+                bandName: ''
             }
         })
     })

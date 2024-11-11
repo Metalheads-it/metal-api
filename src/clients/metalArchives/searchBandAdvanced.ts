@@ -42,6 +42,7 @@ export const searchBandAdvanced = async (
     } = advancedSearchData
 
     const conditionalParameters = {
+        ...(exactBandMatch && { exactBandMatch }),
         ...(advancedSearchData.genre && { genre: advancedSearchData.genre }),
         ...(advancedSearchData.country && {
             country: advancedSearchData.country
@@ -62,7 +63,6 @@ export const searchBandAdvanced = async (
         url: config.metalArchives.searchBandAdvancedUrl,
         params: {
             bandName: band,
-            exactBandMatch,
             status,
             themes,
             location,

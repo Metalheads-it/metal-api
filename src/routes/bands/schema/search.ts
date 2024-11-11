@@ -3,7 +3,8 @@ import { bandSearchResultSchema } from '@src/shared/schema'
 
 export const searchBandQuerySchema = Type.Object({
     band: Type.String({ minLength: 1 }),
-    offset: Type.Optional(Type.Number({ minimum: 0 }))
+    offset: Type.Optional(Type.Number({ minimum: 0 })),
+    exactBandMatch: Type.Optional(Type.Boolean())
 })
 
 export type SearchBandQuery = Static<typeof searchBandQuerySchema>
