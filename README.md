@@ -54,7 +54,7 @@ To install and set up Metal API, follow these steps:
 To use the Metal API once you've launched the application, make HTTP requests to the endpoints provided. Here is an example using `curl`:
 
 ```bash
-curl -X GET 'http://localhost:3000/bands/search/{artistName}'
+curl -X GET 'http://localhost:3000/bands/search?band={artistName}'
 ```
 
 Replace {artistName} with the name of the artist you want to retrieve information about.
