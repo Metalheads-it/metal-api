@@ -9,19 +9,7 @@ export const bandSearchResultSchema = Type.Object({
         format: 'uri',
         description: 'Band link on MetalArchives'
     }),
-    id: Type.Number({ minimum: 0, description: 'Metal Archives Band ID' }),
-    location: Type.Optional(
-        Type.String({ description: 'Band location (city/region)' })
-    ),
-    themes: Type.Optional(
-        Type.String({ minLength: 1, description: 'Band theme' })
-    ),
-    label: Type.Optional(
-        Type.String({ minLength: 1, description: 'Current label' })
-    ),
-    year: Type.Optional(
-        Type.String({ length: 4, description: 'year of founding' })
-    )
+    id: Type.Number({ minimum: 0, description: 'Metal Archives Band ID' })
 })
 
 export const dataSchema = Type.Record(

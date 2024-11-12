@@ -36,12 +36,13 @@ export const searchBandAdvanced = async (
         status = Object.values(BAND_STATUS).filter(
             (value): value is BAND_STATUS => typeof value === 'number'
         ),
-        themes = '*',
-        location = '*',
-        bandLabelName = '*'
+        themes,
+        location,
+        bandLabelName
     } = advancedSearchData
 
     const conditionalParameters = {
+        ...(exactBandMatch && { exactBandMatch }),
         ...(advancedSearchData.genre && { genre: advancedSearchData.genre }),
         ...(advancedSearchData.country && {
             country: advancedSearchData.country
@@ -62,11 +63,10 @@ export const searchBandAdvanced = async (
         url: config.metalArchives.searchBandAdvancedUrl,
         params: {
             bandName: band,
-            exactBandMatch,
             status,
-            themes,
-            location,
-            bandLabelName,
+            ...(themes && { themes }),
+            ...(location && { location }),
+            ...(bandLabelName && { bandLabelName }),
             sEcho: 1,
             iColumns: 6,
             sColumns: '',
@@ -93,21 +93,15 @@ const transformSearchResults = (
     entries: SearchBandAdvancedEntry[] | undefined
 ): BandSearchResult[] => {
     if (entries === undefined) return []
-    return entries.map(
-        ([htmlString, genre, country, location, themes, year, label]) => {
-            const { band, link, id } = extractBandInfo(htmlString)
+    return entries.map(([htmlString, genre, country]) => {
+        const { band, link, id } = extractBandInfo(htmlString)
 
-            return {
-                band,
-                link,
-                id,
-                genre,
-                country,
-                location,
-                themes,
-                year,
-                label
-            } satisfies BandSearchResult
-        }
-    )
+        return {
+            band,
+            link,
+            id,
+            genre,
+            country
+        } satisfies BandSearchResult
+    })
 }

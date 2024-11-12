@@ -3,6 +3,7 @@ import { build } from '@src/app'
 import { FastifyInstance } from 'fastify'
 import { config } from '@src/config'
 import { searchBandAdvancedResponseFixture } from '@src/tests/fixtures/clients/metalArchives/searchBandAdvanced'
+import { searchBandResponseFixture } from '@src/tests/fixtures/routes/bands/searchBand'
 
 describe('Search Band', () => {
     let server: FastifyInstance
@@ -32,6 +33,7 @@ describe('Search Band', () => {
 
         expect(response.statusCode).toEqual(200)
         expect(nock.isDone()).toBe(true)
+        expect(response.json()).toEqual(searchBandResponseFixture)
     })
 
     it('Should return search results, supply bandname and offset', async () => {
@@ -47,6 +49,35 @@ describe('Search Band', () => {
 
         expect(response.statusCode).toEqual(200)
         expect(nock.isDone()).toBe(true)
+        expect(response.json()).toEqual(searchBandResponseFixture)
+    })
+
+    it('Should return search results, supply bandname, offset and exactBandMatch', async () => {
+        nock(config.metalArchives.searchBandAdvancedUrl)
+            .get('/')
+            .query(true)
+            .reply(200, searchBandAdvancedResponseFixture)
+        const response = await server.inject({
+            method: 'GET',
+            url: '/bands/search/?band=immortal&offset=0&exactBandMatch=true'
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(nock.isDone()).toBe(true)
+        expect(response.json()).toEqual(searchBandResponseFixture)
+    })
+
+    it('Should return search results with exactBandMatch=false', async () => {
+        nock(config.metalArchives.searchBandAdvancedUrl)
+            .get('/')
+            .query(true)
+            .reply(200, searchBandAdvancedResponseFixture)
+        const response = await server.inject({
+            method: 'GET',
+            url: '/bands/search/?band=immortal&offset=0&exactBandMatch=false'
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(nock.isDone()).toBe(true)
+        expect(response.json()).toEqual(searchBandResponseFixture)
     })
 
     it('Should handle empty band name', async () => {
