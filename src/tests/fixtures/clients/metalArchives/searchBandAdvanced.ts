@@ -6,9 +6,6 @@ import {
 export const searchBandAdvancedQueryFixture = {
     bandName: `immortal`,
     status: [1, 2, 3, 4, 5, 6],
-    themes: '*',
-    location: '*',
-    bandLabelName: '*',
     sEcho: 1,
     iColumns: 6,
     sColumns: '',
