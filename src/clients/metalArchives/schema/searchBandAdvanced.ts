@@ -72,14 +72,10 @@ export const searchBandAdvancedQuerySchema = Type.Object({
         })
     ),
 
-    themes: Type.Optional(
-        Type.String({ description: 'Search by themes', default: '*' })
-    ),
-    location: Type.Optional(
-        Type.String({ description: 'Search by location', default: '*' })
-    ),
+    themes: Type.Optional(Type.String({ description: 'Search by themes' })),
+    location: Type.Optional(Type.String({ description: 'Search by location' })),
     bandLabelName: Type.Optional(
-        Type.String({ description: 'Search by label', default: '*' })
+        Type.String({ description: 'Search by label' })
     ),
     sEcho: Type.Number({ default: 1 }),
     iColumns: Type.Number({ default: 6 }),
@@ -98,17 +94,48 @@ export type SearchBandAdvancedQuery = Static<
     typeof searchBandAdvancedQuerySchema
 >
 
-export const searchBandAdvancedEntrySchema = Type.Tuple([
-    Type.String({
-        description: 'Complete band link for MA, including name, link, id'
-    }),
-    Type.String({ description: 'Genre' }),
-    Type.String({ description: 'Country' }),
-    Type.String({ description: 'Location (city/region)' }),
-    Type.String({ description: 'themes' }),
-    Type.String({ description: 'Year of band founding' }),
-    Type.String({ description: 'Label name' })
+const completeBandLinkSchema = Type.String({
+    description: 'Complete band link for MA, including name, link, id'
+})
+
+const genreSchema = Type.String({ description: 'Genre' })
+
+const countrySchema = Type.String({ description: 'Country' })
+
+export const searchBandAdvancedEntrySchema = Type.Union([
+    Type.Tuple([completeBandLinkSchema, genreSchema, countrySchema]),
+    Type.Tuple([
+        completeBandLinkSchema,
+        genreSchema,
+        countrySchema,
+        Type.String()
+    ]),
+    Type.Tuple([
+        completeBandLinkSchema,
+        genreSchema,
+        countrySchema,
+        Type.String(),
+        Type.String()
+    ]),
+    Type.Tuple([
+        completeBandLinkSchema,
+        genreSchema,
+        countrySchema,
+        Type.String(),
+        Type.String(),
+        Type.String()
+    ]),
+    Type.Tuple([
+        completeBandLinkSchema,
+        genreSchema,
+        countrySchema,
+        Type.String(),
+        Type.String(),
+        Type.String(),
+        Type.String()
+    ])
 ])
+
 export type SearchBandAdvancedEntry = Static<
     typeof searchBandAdvancedEntrySchema
 >

@@ -2,8 +2,20 @@ import { Type, Static } from '@sinclair/typebox'
 import { bandSearchResultSchema } from '@src/shared/schema'
 
 export const searchBandQuerySchema = Type.Object({
-    band: Type.String({ minLength: 1 }),
-    offset: Type.Optional(Type.Number({ minimum: 0 }))
+    band: Type.String({
+        minLength: 1,
+        description: 'Band name you want to search'
+    }),
+    offset: Type.Optional(
+        Type.Number({
+            minimum: 0,
+            description:
+                'Offset of search. When paging use this to skip results by a certain amount'
+        })
+    ),
+    exactBandMatch: Type.Optional(
+        Type.Boolean({ description: 'If the name has to be an exact match' })
+    )
 })
 
 export type SearchBandQuery = Static<typeof searchBandQuerySchema>
